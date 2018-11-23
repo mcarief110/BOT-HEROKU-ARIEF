@@ -1,35 +1,22 @@
 const Discord = require("discord.js");
-const errors = require("../utils/errors.js");
 
-module.exports.run = async (bot, message, args) => {
+exports.run = (bot, message, args) => {
+  if (!message.member.hasPermission('KICK_MEMBERS')) return message.channel.send('You don\'t have permission!'); // Checks permission
+  let member = message.mentions.members.first() || message.guild.members.get(args[0]); // Member mention
+  if (!member) return message.channel.send('Please mention a member to kick!');
+  if (!member.kickable) return message.channel.send('You cannot kick a member with a role higher or equal than you!');
+  let reason = args.slice(2).join(' '); // Reason arguments
+  if (!reason) return message.channel.send("pls input the reson");
 
-    if(!message.member.hasPermission("KICK_MEMBERS")) return errors.noPerms(message, "KICK_MEMBERS");
-    if(args[0] == "help"){
-      message.reply("Usage: !kick <user> <reason>");
-      return;
-    }
-    let kUser = message.guild.member(message.mentions.users.first() || message.guild.members.get(args[0]));
-    if(!kUser) return errors.cantfindUser(message.channel);
-    let kReason = args.join(" ").slice(22);
-    if(kUser.hasPermission("MANAGE_MESSAGES")) return errors.equalPerms(message, kUser, "MANAGE_MESSAGES");
+  member.kick(reason)
 
-    let kickEmbed = new Discord.RichEmbed()
-    .setDescription("Kick Removed Logs")
-    .setColor("#e56b00")
-    .addField("Kicked User", `${kUser} with ID ${kUser.id}`)
-    .addField("Kicked By", `<@${message.author.id}> with ID ${message.author.id}`)
-    .addField("Kicked In", message.channel)
-    .addField("Tiime", message.createdAt)
-    .addField("Reason", kReason);
-
-    let kickChannel = message.guild.channels.find(`name`, "💬server▪log💬");
-    if(!kickChannel) return message.channel.send("Cannot Find 💬server▪log💬 Channel.");
-
-    message.guild.member(kUser).kick(kReason);
-    message.channel.send(`${kUser} Has Been Kicked By ${message.author} Reason: ${kReason}`);
-    kickChannel.send(kickEmbed);
-}
-
-module.exports.help = {
-  name:"kick"
-}
+  let embed = new Discord.RichEmbed() //  RichEmbed constructor
+      .setAuthor("Action | Kick", member.user.displayAvatarURL)
+      .addField("Username", member.user.tag, true)
+      .addField("Reason", `${reason}`, true)
+      .addField("Moderator", `<@${message.author.id}>`, true)
+      .setColor("#4286f4")
+      .setTimestamp()
+      .setFooter("Bot Created By GorutoCraftYT#4907", bot.user.displayAvatarURL)
+  message.channel.send(embed);
+};
