@@ -1,12 +1,12 @@
 {
-  "name": "gorutocraft",
-  "version": "10.12.14",
-  "description": "males",
+  "name": "host-24-7-heroku-lmao-master",
+  "version": "4.3.0",
+  "description": "arief developer",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "GorutoCraft#8447",
+  "author": "ARIEF DEVELOPMENT#3595",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.4.2"
