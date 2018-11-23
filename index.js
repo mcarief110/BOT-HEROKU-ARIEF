@@ -18,15 +18,38 @@ setInterval(() => {
 }, 280000);
 
 const Discord = require("discord.js");
-const TOKEN = process.env.TOKEN
-const PREFIX = process.env.PREFIX
+const TOKEN = process.env.BOT_TOKEN
+const PREFIX = process.env.BOT_PREFIX
 
 var bot = new Discord.Client()
 
-bot.on("ready", function() {
-    console.log("Ntapp");
-    bot.user.setActivity("gunakan | type g,help", { type: "Streaming" })  // Set the bot's PLAYING/STREAMING/LISTENING/WATCHING status (.help | discord.gg/nNapvDU)
-    bot.user.setStatus("online")  // Set the bot's online/idle/dnd/invisible status
+function changing_status() {
+  let status = [`Say g,help || Released Now!`, `With ${client.users.size} Users`, `With ${client.guilds.size} Server`, `With ${client.channels.size} Channels`, `24/7 Online Forever`, `Hosted In Heroku`]
+  let random = status[Math.floor(Math.random() * status.length)]
+  client.user.setActivity(random)
+}
+
+client.on('ready', () => {
+  console.log(`${client.user.tag} Bot Has Online Now With Player Using ${client.users.size} Users And Using ${client.channels.size} Channels And ${client.guilds.size} Servers!`);
+  client.user.setStatus('dnd');
+  setInterval(changing_status, 9000);
+})
+
+client.on("guildMemberAdd", async member => {
+  let autoRole = await db.fetch(`autorole_${member.guild.id}`).catch(err => console.log(err));
+  let autorole = member.guild.roles.find('name', autoRole);
+  member.addRole(autorole);
+  let welcomechannel = member.guild.channels.find(`name`, "💬welcome-goodbye💬");
+  welcomechannel.send(`${member} Has Joined The Our Discord Server`);
+})
+
+client.on("guildMemberRemove", async member => {
+  console.log(`${member.id} Has Leaved The Discord Server`);
+
+  let welcomechannel = member.guild.channels.find(`name`, "💬welcome-goodbye💬");
+  welcomechannel.send(`${member} Has Leaved The Our Discord Server`);
+})
+
 });
 
 bot.on("message", function(message) {
@@ -47,4 +70,4 @@ bot.on("message", function(message) {
     if (!command) return message.channel.send("invalid command");
 });
 
-bot.login(process.env.TOKEN);
+bot.login(process.env.BOT_TOKEN);
